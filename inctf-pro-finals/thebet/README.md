@@ -22,7 +22,7 @@
 ![let's begin](https://i.imgflip.com/34ifo0.gif)
 
 There are totally 4 user defined functions in this binary:-
-`Main` functions which calls the functions `setup seccomp,Life Imprisonment and Capital Punishment` ..
+`Main` function which calls the functions `setup seccomp,Life Imprisonment and Capital Punishment` ..
 
 The function `Life Imprisonment` and `Capital Punishment` both almost does the same functionality but with different puts statements..
 
@@ -35,7 +35,7 @@ The function `setup seccomp` sets up a seccomp that allows only a limited set of
   sVar1 = read(0,local_28,100);
   ```
   
-  This code reamins same in both the `Life imprisonment` and `Capital Punishment` function..
+  This code remains same in both the `Life imprisonment` and `Capital Punishment` function..
   
   The part where the problem in the code is you can see that the variable size is 32 but read is reading up to 100 characters..
   
@@ -68,9 +68,9 @@ Here see this below image where it get crashed when supplied high number of char
   } while( true );
 }
 ```
-The above code looks like its king something from the input. Every character from the input is checked with a global array of characters called bad chars if any character from that found out to be in input the program exists.. 
+The above code looks like its checking something from the input. Every character from the input is checked with a global array of characters called bad chars if any character from that is found out to be in input ,the program exits.. 
 
-So the input has to be without those characters..
+So the input has to be without these below characters..
 `` {0x50, 0x2e, 0xbb, 0xb0, 0x83, 0xf6, 0x10, 0xaa, 0xd2, 0x98, 0x99, 0x30, 0x31} ``
 
 The saddest part is that `pop rdi` gadget which is essential for puts falls under the restricted chars..
@@ -99,7 +99,7 @@ Does this means we only need a shellcode to pwn the binary..
 
 I am not good at shellcoding so I was like completely pissed at myself that maybe I can't solve this challenge or have to spend a day to atleast complete this challenge as my shellcoding skill is so bad..
 
-I was scratching my head and searching the net for some shellcodes that could work here..
+I was scratching my head for a long time and searching the net for some shellcodes that could work here..
 
 ![saw](https://memegenerator.net/img/instances/53645289/oh-wait-i-think-i-saw-something.jpg)
 
@@ -165,7 +165,7 @@ And also here we have bypassed the seccomp rules as the function never ran.
 
 3)Then for the next forged read pass the simple rop payload to leak puts libc address to get the libc version from libc.blukat.me and download the file and also to find the libc range and return back to `Capital Punishment` or `Life Imprisonment` .
 
-4)Repeat the same step but this time use the second read to return to `system('/bin/sh')`.
+4)Repeat the same step 2  but this time use the second read to return to `system('/bin/sh')`.
 
 ![meme](https://memegenerator.net/img/instances/64859062/hack-the-planet.jpg)
 
