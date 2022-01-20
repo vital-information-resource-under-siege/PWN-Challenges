@@ -118,7 +118,7 @@ Here we can see that our our name input is ajay. And our next input which is pas
 
     The input is read using read so no terminators are placed after input. 
 
-    #### As PIE work is similar to ASLR which places the binary base in random regions except the first nibble and the last three nibbles will always be same while in ASLR the first two nibbles and the last three nibbles will be same
+    ## As PIE work is similar to ASLR which places the binary base in random regions except the first nibble and the last three nibbles will always be same while in ASLR the first two nibbles and the last three nibbles will be same
 
     Let me write a test C program to print out the address to show how PIE and ASLR works.
 
