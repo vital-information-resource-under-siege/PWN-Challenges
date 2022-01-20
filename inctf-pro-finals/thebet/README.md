@@ -24,7 +24,7 @@
 There are totally 4 user defined functions in this binary:-
 `Main` function which calls the functions `setup seccomp,Life Imprisonment and Capital Punishment` ..
 
-The function `Life Imprisonment` and `Capital Punishment` both almost does the same functionality but with different puts statements..
+The function `Life Imprisonment` and `Capital Punishment` both almost does the same functionality but with different puts statements.
 
 The function `setup seccomp` sets up a seccomp that allows only a limited set of syscalls but the funny part is that it is placed at the end of the main function..
 
