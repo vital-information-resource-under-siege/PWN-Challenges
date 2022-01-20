@@ -110,7 +110,7 @@ I was scratching my head for a long time and searching the net for some shellcod
 My input was 99 A's with a newline at the end which accounts to full 100.. 
 
 
-From the above image you can see rdi is 0 ,rsi is still the same buffer and rdx is the number of characters read(i checked with different inputs it is not the old value but the size return value which gets passed to the int varaible)
+From the above image you can see rdi is 0 ,rsi is still the same buffer and rdx is the number of characters read(i checked with different inputs it is not the old value but the size return value which gets passed to the int variable)
 
 The reason why I am saying about the registers is function arguement for the function is passed through these registers in 64 bit arch. 
 
