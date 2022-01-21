@@ -305,3 +305,7 @@ r.interactive()
 ```
 
 ![14th](https://raw.githubusercontent.com/vital-information-resource-under-siege/PWN-Challenges/main/inctf-pro-finals/r0pking/Writeup%20Images/14th.png)
+
+Have fun reading the writeup and knowing about ret2plt and ret2libc..
+
+ ![bye](https://i.kym-cdn.com/entries/icons/original/000/030/967/spongebob.jpg)
