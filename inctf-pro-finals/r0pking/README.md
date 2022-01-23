@@ -183,7 +183,7 @@ Pwntools not only helps you to only send data but also to receive data. Some of 
 
 From the above console output we can see that after executing binary it prints all which has the same output like the r.recv() while r.recvline() receives until newline is encountered and r.recvafter(argument) receives until the argument value is encountered in stdout.
 
- And I know you guys are tired using "\xef\xbe\xad\xde" for using non-ASCII inputs .. And may use struct.pack too..But there is something easier than that in pwntools .Pwntools has its own functions for byte packing like `p8(value to pack in 8 bytes) p16(value to pack in 16 bytes) p32(value to pack in 32 bytes) p64(value to pack in 64 bytes)`
+ And I know you guys are tired using "\xef\xbe\xad\xde" for using non-ASCII inputs .. And may use struct.pack too..But there is something easier than that in pwntools .Pwntools has its own functions for byte packing like `p8(value to pack in 8 bits) p16(value to pack in 16 bits) p32(value to pack in 32 bits) p64(value to pack in 64 bits)`
 
 ![ninth pic](https://raw.githubusercontent.com/vital-information-resource-under-siege/PWN-Challenges/main/inctf-pro-finals/r0pking/Writeup%20Images/ninth.png)
 
