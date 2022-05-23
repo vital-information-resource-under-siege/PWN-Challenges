@@ -1,4 +1,4 @@
 # PWN-Challenges
 
 
-Here I am gonna add some PWN Challenges Writeups of some CTF's I have done ....
+Here I am gonna add some PWN Challenges POC's or writeups that I solved in some CTF's..
