@@ -1,0 +1,19 @@
+┌───────────────┬────────┐
+│ Control Panel │ 9A0:F3 │
+├───────────────┴────────┤
+│                        │
+│ Technician:            │
+│                        │
+│ 1. Configure Engine    │
+│                        │
+│ 2. Check Engine        │
+│                        │
+│ Captain:               │
+│                        │
+│ 3. Set route           │
+│                        │
+│ 4. View route          │
+│                        │
+│ 5. Change roles        │
+│                        │
+└────────────────────────┘
