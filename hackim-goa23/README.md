@@ -242,7 +242,7 @@ r.interactive()
 
 ## Hack the Hash
 
-<b>We are given a 32 Bit ELF Binary that is linked with libc version equal or higher than 2.34 .So we have to patch it if we have lower libc versions </b>
+<b>We are given a 32 Bit ELF Binary that is linked with libc version equal or higher than 2.34 .So we have to patch it if we have lower libc versions and some more library files for the SHA-1 operation in the challenge</b>
 
 To be honest, with all those dependencies and being the only 32 bit than other and also provided libc was broken . So it was hard time setting up the challenge.
 
@@ -412,7 +412,7 @@ r.interactive()
 
 
 
-# Reverse challenge from HACKIM GOA 23
+# Reverse challenge from HACKIM GOA23
 
 ## Movie
 
@@ -521,3 +521,79 @@ From guessing I found before and after AND '_'  should be there.
 
 Only Hackers was the one, So I gave H as part of the one of the constraints . Even before that constraints part most of the possible flags without crc constraints turn out to have 'H' in flag index 4. After adding the constraints I got the flags inside 10 possibilities.
 ![flag](https://raw.githubusercontent.com/vital-information-resource-under-siege/PWN-Challenges/main/hackim-goa23/movie/flag.png)
+
+
+
+# Crypto Challenge from HACKIM GOA23
+
+## Euclidean RSA
+
+<b>We are given two files one is the source code for the challenge and the other is the output of the source code that contains the cipher and the values it printed </b>
+
+Source code of the challenge:-
+
+```python
+#!/usr/bin/env python3
+from Crypto.PublicKey import RSA
+from Crypto.Util.number import bytes_to_long
+from secret import flag, magic
+
+while True:
+	try:
+		key = RSA.generate(2048)
+		a,b,c,d = magic(key)
+		break
+	except:
+		pass
+assert a**2 + b**2 == key.n
+assert c**2 + d**2 == key.n
+for _ in [a,b,c,d]:
+	print(_)
+cipher = pow(bytes_to_long(flag), key.e, key.n)
+print(cipher)
+
+```
+
+From the source code we can see that the values of a,b,c,d and cipher is getting printed
+
+The value of N can be deducted by multiplying the squares of a and b or c and d.
+
+To get p and q ,the primes that are multiplied to get N. We can deduct the values using **brahmagupta fibonacci identity** .
+
+acbd = (ac) + (bd)
+
+adbc = (ad) - (bc)
+
+p is gcd of (acbd,adbc)
+
+using p and n we can deduct q .
+
+Then simple everyday RSA process to get flag.
+
+```python
+#!/usr/bin/env python3
+
+
+from Crypto.Util.number import long_to_bytes
+from math import gcd
+
+
+a = 139488614271687589953884690592970545345100917058745264617112217132329766542251923634602298183777415221556922931467521901793230800271771036880075840122128322419937786441619850848876309600263298041438727684373621920233326334840988865922273325440799379584418142760239470239003470212399313033715405566836809419407
+b = 68334789534409058399709747444525414762334123566273125910569662060699644186162637240997793681284151882169786866201685085241431171760907057806355318216602175990235605823755224694383202043476486594392938995563562039702918509120988489287149220217082428193897933957628562633459049042920472531693730366503272507672
+c = 124011822519139836919119491309637022805378274989854408578991029026928119002489232335977596528581855016599610031796540079373031282148998625318658034408770283112750172223328012238338715644743140990997114236125750813379366262418292349962679006556523851370694404238101553966330965676189731474108393418372330606063
+d = 93529593432394381438671783119087013080855868893236377597950059020717371498802208966524066540234253992421963224344343067174201693672350438201011499762718490958025617655722916641293034417795512315497126128726644064013248230211347407788186320320456853993252621916838570027019607155835349111757703654306736031792
+cipher = 2819638499688340337879314536945338371611392232636746056275506290935131270682791584873534866138393305591899169164183372576878693678187335219904407119253951099126339949954303448641761723704171837075206394491403411400326176280981393624784437102905397888236098861970020785226848615566768625581096019917060387964269283048823007992992874533775547300443032304973521568046956516203101626941042560505073773998143068621715480774707735064134961852206070850277695448391038882766344567740211926618750074636868149063283746597347807257171871016202588384726430246523650462866812935130465049824665395626882280287488078029119879891722
+
+
+n = a**2 + b**2
+e = 65537
+acbd = a*c + b*d
+adbc = a*d - b*c
+p = gcd(acbd, adbc)
+q = n // p
+phi = (p-1)*(q-1)
+d = pow(e, -1, phi)
+flag = pow(cipher, d, n)
+print(long_to_bytes(flag))
+```
+
