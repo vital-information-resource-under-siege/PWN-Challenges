@@ -520,4 +520,4 @@ As the crc32 function was kinda tough I made some guesses and got a list of hack
 From guessing I found before and after AND '_'  should be there.
 
 Only Hackers was the one, So I gave H as part of the one of the constraints . Even before that constraints part most of the possible flags without crc constraints turn out to have 'H' in flag index 4. After adding the constraints I got the flags inside 10 possibilities.
-
+![flag](https://raw.githubusercontent.com/vital-information-resource-under-siege/PWN-Challenges/main/hackim-goa23/movie/flag.png)
