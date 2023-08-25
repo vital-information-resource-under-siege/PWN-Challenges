@@ -412,5 +412,112 @@ r.interactive()
 
 
 
+# Reverse challenge from HACKIM GOA 23
 
+## Movie
+
+<b>We are given a 64 bit statically linked binary  with 7 user defined functions</b>
+
+The 7 user defined functions are:-
+
+1) main
+2) crc32b
+3) check
+4) ccheck
+5) cccheck
+6) ccccheck
+7) cccccheck
+
+#### Main function
+
+It calls all the check functions on user input and prints "Nice,you're are right"  if the flag is correct or crashes the program by writing to a null pointer if any of the checks fail
+
+#### Check function
+
+It is a simple function that checks whether the user input starts with **ENO{** .
+
+#### Ccheck function
+
+This function does some Xor options with a hardcoded string "R]WL^aA|q#g" and checks whether the input index from 12 -  22 is **AND_MrRob0t**
+
+#### Cccheck function
+
+1.Checks whether the flag index from 4-11 is only A-Z,0-9 ,\, and _.
+
+2.Modifies the flag index from 4-11 by xoring it with already founded index from 15-22.
+
+3.Xors the modified flag index from 4-11 with already founded values of flag index from 15-22 and checks whether it sums is equal to 500.
+
+4.Xors the modified flag index from 4-11 with already founded values of flag index from 15-22 and checks whether it product is equal to 0x3A49D503C4C0.
+
+#### Ccccheck function
+
+Just checks whether the last character of user input is **}**
+
+#### Cccccheck function
+
+Calls the crc32b function with our modified user input and checks whether the return value is equal to 1729247814.
+
+#### crc32b function
+
+I didn't reverse crc32b function well and solved it without knowing about this function as this function was complicated.
+
+```python
+#!/usr/bin/env python3
+
+
+from z3 import *
+import string
+
+a1 = [BitVec(f"flag_{i}",32)for i in range(24)]
+s = Solver()
+s.add(a1[0] == ord("E"))
+s.add(a1[1] == ord("N"))
+s.add(a1[2] == ord("O"))
+s.add(a1[3] == ord("{"))
+s.add(a1[23] == ord("}"))
+s.add(a1[12] == ord("A"))
+s.add(a1[13] == ord("N"))
+s.add(a1[14] == ord("D"))
+s.add(a1[15] == ord("_"))
+s.add(a1[16] == ord("M"))
+s.add(a1[17] == ord("r"))
+s.add(a1[18] == ord("R"))
+s.add(a1[19] == ord("o"))
+s.add(a1[20] == ord("b"))
+s.add(a1[21] == ord("0"))
+s.add(a1[22] == ord("t"))
+s.add(a1[23] == ord("}"))
+s.add(a1[11] == ord("_"))
+s.add(a1[4] == ord("H"))
+sum_val = 0
+mul_val = 1
+ccheck = "ENO{*******_AND_MrRob0t}"
+for i in range(4,12):
+    sum_val+=a1[i] ^ ord(ccheck[11+i])
+    mul_val*=a1[i] ^ ord(ccheck[11+i])
+s.add(sum_val == 500)
+s.add(mul_val == 0x3a49d503c4c0)
+val = string.digits + string.ascii_uppercase
+for i in range(5,11):
+    for j in range(0,127):
+        if(chr(j)  not in val):
+            s.add(a1[i] != j)
+for i in range(5,11):
+    s.add(a1[i] >= 0x30)
+    s.add(a1[i] <= 0x5a)
+for i in range(1,10):
+    print(s.check())
+    model = s.model() 
+    flag = ''.join([chr(int(str(model[a1[i]]))) for i in range(len(model))])
+    print(flag)
+```
+
+
+
+As the crc32 function was kinda tough I made some guesses and got a list of hacker movies and series that is of seven letters.
+
+From guessing I found before and after AND '_'  should be there.
+
+Only Hackers was the one, So I gave H as part of the one of the constraints . Even before that constraints part most of the possible flags without crc constraints turn out to have 'H' in flag index 4. After adding the constraints I got the flags inside 10 possibilities.
 
