@@ -1,0 +1,9 @@
+ictf{just_another_flag_checker_a3465d5e5ee234ba}
+
+
+xor the string inside the binary with 0x5
+
+>>> from pwn import xor
+>>> xor("lfqc~opvqZdkjqm`wZcidbZfm`fn`wZd6130a0`0``761gdx",0x5)
+b'ictf{just_another_flag_checker_a3465d5e5ee234ba}'
+
