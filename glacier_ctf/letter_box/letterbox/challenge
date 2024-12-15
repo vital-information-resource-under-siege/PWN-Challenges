@@ -1,0 +1,115 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# Respect the shebang and mark file as executable
+
+import os
+import sys
+import random
+from flask import Flask, render_template, request, redirect, url_for, session, flash, render_template_string
+from werkzeug.security import check_password_hash, generate_password_hash
+from waitress import serve
+import socket
+import threading
+import time
+
+app = Flask(__name__, instance_relative_config=True)
+app.config.from_mapping(SECRET_KEY=random.randbytes(128))
+
+flag_path = './flag.txt'
+flag = ''
+with open(flag_path, 'r') as f:
+    flag = f.read()
+app.config['FLAG'] = flag
+
+try:
+    os.makedirs(app.instance_path)
+except OSError:
+    pass
+
+filename = './letters.txt'
+with open(filename, 'w') as f:
+    f.write('Welcome admin!\n')
+
+
+HOST = '127.0.0.1'
+PORT = 65432
+
+def socket_server():
+    while True:
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+                server_socket.bind((HOST, PORT))
+                server_socket.listen()
+                print(f"Socket server listening on {HOST}:{PORT}")
+                
+                while True:
+                    client_socket, _ = server_socket.accept()
+                    with client_socket:
+                        data = client_socket.recv(1024)
+                        if data:
+                            try:
+                                letter = data.decode('utf-8').strip()
+                                with open(filename, 'a') as f:
+                                    f.write(letter+'\n')
+                            except:
+                                pass
+        except Exception as ex:
+            print(f"Socket server error: {ex}. Restarting...")
+            time.sleep(.5)
+
+@app.route('/', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        password = request.form.get('password')
+        user_hash = generate_password_hash("admin")
+        if user_hash and check_password_hash(user_hash, password):
+            session['username'] = 'admin'
+            flash('Login successful!', 'success')
+            return redirect(url_for('inbox'))
+        else:
+            flash('Invalid username or password', 'danger')
+
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    flash('You have been logged out.', 'info')
+    return redirect(url_for('login'))
+
+@app.route('/inbox')
+def inbox():
+    if 'username' not in session:
+        flash('You must be logged in to access your inbox!', 'danger')
+        return redirect(url_for('login'))
+    letters = []
+    try:
+        with open(filename, 'r') as f:
+            letters = f.readlines()
+    except:
+        pass
+
+    html = """
+     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inbox</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container my-4">
+        <h2 class="mb-4">Inbox</h2>
+        <div class="list-group">
+            %s
+        </div>
+    </div>
+</body>
+</html>
+""" %''.join([f'<a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start"><div><h6 class="mb-1">Anonymous</h6><p class="mb-1 text-muted">{x}</p></div><small class="text-muted">10:30 AM</small></a>' for x in letters[-10:]])
+    return render_template_string(html)
+
+
+# Start socket server in a separate thread                         
+socket_thread = threading.Thread(target=socket_server, daemon=True)
+socket_thread.start()
+
+serve(app, host='0.0.0.0', port=int(sys.argv[1]))
